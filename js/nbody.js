@@ -2,34 +2,108 @@
 //////// Author: Gil Miranda
 //////// Contact: gilsmneto@gmail.com; gil.neto@ufrj.br
 ////////////// Last Update: 02/11/2019
-
 var canvas = document.querySelector('canvas');
-var context = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const G = 6.67428e-11;
+  var context = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+
+var G = 6.67428e-11;
 var AU = 149.6e7;
 var meterPerPixel = AU/2;
+h = 24*3600;
 var i, j;
 
+class config {
+  constructor() { 
+    this.integrator = "yoshida"; 
+    this.simulation = "solar system";
+  }
+  changeSim(sim) {
+    if (sim == "solar system") {
+      G = 6.67428e-11;
+      meterPerPixel = AU/2;
+      this.changeStep(24*3600);
+      this.simulation = sim;
+    } else if (sim == "fig8") {
+      G = 1;
+      meterPerPixel = 1/200;
+      this.changeStep(0.01);
+      this.simulation = sim;
+    } else if (sim == "coreo1") {
+      G = 6.67428e-11;
+      meterPerPixel = AU/2;
+      this.changeStep(24*3600);
+      this.simulation = sim;
+    }
+  }
+  changeStep(newh) {
+    h = newh
+  }
+}
+//////////////////// Graphics module
 
-var set_UI = function(body_count, cm_x, cm_y) {
-  var body_counter = document.getElementById('body_counter');
-  body_counter.innerHTML = body_count;
+class graphics {
+  constructor() { 
+    this.meterPerPixel = AU/2;
+    // Routine to plot the planets
+    this.drawBody = function(bodies){
+      for(i = 0; i < bodies.length; i++) {
+        context.beginPath();
+        context.arc(bodies[i].plot_x, bodies[i].plot_y, bodies[i].ra,0,Math.PI*2, false);
+        context.fillStyle = bodies[i].color;
+        context.fill();
+      }
+    };
 
-  var cm_posx = document.getElementById('cm_posx');
-  var cm_posy = document.getElementById('cm_posy');
-  cm_posx.innerHTML = cm_x;
-  cm_posy.innerHTML = cm_y;
+    // Routine to plot trail
+    this.drawOrbitalLines = function(bodies) {
+      for (i = 0; i < bodies.length; i++) {
+        for(j = 10; j < bodies[i].lastpos_x.length; j++) {
+          context.beginPath();
+          context.strokeStyle = bodies[i].color;
+          context.moveTo(bodies[i].lastpos_x[j-1], bodies[i].lastpos_y[j-1]);
+          context.lineTo(bodies[i].lastpos_x[j], bodies[i].lastpos_y[j]);
+          context.stroke();
+        }
+      }
+    }
+
+    // Routine to plot CM
+    this.drawCM = function(x, y) {
+      context.beginPath();
+      context.strokeStyle = 'DeepPink';
+      context.moveTo(x, y);
+      context.lineTo(x + 5, y);
+      context.lineTo(x - 5, y);
+      context.moveTo(x, y);
+      context.lineTo(x, y+5);
+      context.lineTo(x, y-5);
+      context.stroke();
+    }
+    // Routine to set-up the UI information
+    this.set_UI = function(body_count, cm_x, cm_y) {
+      var body_counter = document.getElementById('body_counter');
+      body_counter.innerHTML = body_count;
+    
+      var cm_posx = document.getElementById('cm_posx');
+      var cm_posy = document.getElementById('cm_posy');
+      cm_posx.innerHTML = cm_x;
+      cm_posy.innerHTML = cm_y;
+    }
+
+    // Linear Transformation for plotting coordinates
+    this.set_rx = function(x) {
+      return x/meterPerPixel + 0.5*canvas.width;
+    }
+    
+    this.set_ry = function(y) {
+      return y/meterPerPixel + 0.5*canvas.height;
+    }
+  }
 }
 
-var set_rx = function(x) {
-  return x/meterPerPixel + 0.5*canvas.width;
-}
 
-var set_ry = function(y) {
-  return y/meterPerPixel + 0.5*canvas.height;
-}
 
 function mass_center(bodies) {
   this.r_x = 0;
@@ -37,20 +111,6 @@ function mass_center(bodies) {
   this.plot_x = 0;
   this.plot_y = 0;
   this.mass = 0;
-
-  this.draw = function() {
-    context.beginPath();
-    
-    //context.arc(this.plot_x, this.plot_y, 1, 0, 2*Math.PI, false);
-    context.strokeStyle = 'DeepPink';
-    context.moveTo(this.plot_x, this.plot_y);
-    context.lineTo(this.plot_x + 5, this.plot_y);
-    context.lineTo(this.plot_x - 5, this.plot_y);
-    context.moveTo(this.plot_x, this.plot_y);
-    context.lineTo(this.plot_x, this.plot_y+5);
-    context.lineTo(this.plot_x, this.plot_y-5);
-    context.stroke();
-  }
 
   this.set_CM = function() {
     temp_x = 0;
@@ -63,131 +123,66 @@ function mass_center(bodies) {
     }
     this.r_x = temp_x/temp_m;
     this.r_y = temp_y/temp_m;
-    this.plot_x = set_rx(this.r_x);
-    this.plot_y = set_ry(this.r_y);
-    //console.log('CM -> ' + this.plot_x + ' - ' + this.plot_y);
-    this.draw();
+    this.plot_x = graphics.set_rx(this.r_x);
+    this.plot_y = graphics.set_ry(this.r_y);
+    graphics.drawCM(this.plot_x, this.plot_y);
   }
 }
 
-function body(mass, r_x, r_y, v_x, v_y, ra,color, name) {
-  this.mass = mass; // mass of the planet
-  this.r_x = r_x;
-  this.r_y = r_y;
-  this.plot_x = set_rx(r_x);
-  this.plot_y = set_rx(r_y);
-  this.lastpos_x = [this.plot_x];
-  this.lastpos_y = [this.plot_y];
-  this.v_x = v_x;
-  this.v_y = v_y;
-  this.ra = ra;
-  this.color = color;
-  this.name = name;
-  this.draw = function() {
-    context.beginPath();
-    context.arc(this.plot_x, this.plot_y, this.ra,0,Math.PI*2, false);
-    context.fillStyle = this.color;
-    context.fill();
-  };
-}
-
-
-// Functions that calculate the acceleration on both coordinates //
-
-var acceleration_x = function(body_1, body_2, i, j) {
-  if (i == j) {
-    return 0;
-  }
-  else {
-    return (body_2.r_x-body_1.r_x) * G * body_2.mass / Math.sqrt((body_1.r_x - body_2.r_x)**2 + (body_1.r_y - body_2.r_y)**2)**3;
+class body {
+  constructor(mass, r_x, r_y, v_x, v_y, ra,color, name) {
+    this.mass = mass; // mass of the planet
+    this.r_x = r_x;
+    this.r_y = r_y;
+    this.plot_x = graphics.set_rx(r_x);
+    this.plot_y = graphics.set_ry(r_y);
+    this.lastpos_x = [this.plot_x];
+    this.lastpos_y = [this.plot_y];
+    this.v_x = v_x;
+    this.v_y = v_y;
+    this.ra = ra;
+    this.color = color;
+    this.name = name;
   }
 }
 
-var acceleration_y = function(body_1, body_2, i, j) {
-  if (i == j) {
-    return 0;
+function physics() {
+  this.acceleration_x = function(body_1x, body_1y, body_2, i, j) {
+    if (i == j) {
+      return 0;
+    }
+    else {
+      return (body_2.r_x-body_1x) * G * body_2.mass / Math.sqrt((body_1x - body_2.r_x)**2 + (body_1y - body_2.r_y)**2)**3;
+    }
   }
-  else {
-    return (body_2.r_y-body_1.r_y) * G * body_2.mass / Math.sqrt((body_1.r_x - body_2.r_x)**2 + (body_1.r_y - body_2.r_y)**2)**3;
-  }
-}
-// Special LEAPFROG Functions that calculate the acceleration //
-
-var lf_acceleration_x = function(body_1x, body_1y, body_2, i, j) {
-  if (i == j) {
-    return 0;
-  }
-  else {
-    return (body_2.r_x-body_1x) * G * body_2.mass / Math.sqrt((body_1x - body_2.r_x)**2 + (body_1y - body_2.r_y)**2)**3;
-  }
-}
-
-var lf_acceleration_y = function(body_1x, body_1y, body_2, i, j) {
-  if (i == j) {
-    return 0;
-  }
-  else {
-    return (body_2.r_y-body_1y) * G * body_2.mass / Math.sqrt((body_1x - body_2.r_x)**2 + (body_1y - body_2.r_y)**2)**3;
-  }
-}
-
-
-// Physics Simulation Function
-
-function simulate(step, bodies) {
-  this.step = step;
-  this.bodies = bodies;
-
-  this.draw = function() {
-    for(var i = 0; i < this.bodies.length; i++) {
-      this.bodies[i].draw();
+  
+  this.acceleration_y = function(body_1x, body_1y, body_2, i, j) {
+    if (i == j) {
+      return 0;
+    }
+    else {
+      return (body_2.r_y-body_1y) * G * body_2.mass / Math.sqrt((body_1x - body_2.r_x)**2 + (body_1y - body_2.r_y)**2)**3;
     }
   }
 
-  this.drawLines = function(x, lastx, y, lasty, color) {
-    //console.log(x + ' -> ' + y + '->' + lastx + '->' + lasty);
-    /*context.beginPath();
-    context.strokeStyle = color;
-    context.lineTo(0, 0);
-    context.lineTo(x, y);
-    context.stroke();
-    lastx = x;
-    lasty = y;*/
-  }
 
-  this.drawOrbitalLines = function() {
-    for (i = 0; i < this.bodies.length; i++) {
-      for(j = 10; j < this.bodies[i].lastpos_x.length; j++) {
-        context.beginPath();
-        context.strokeStyle = this.bodies[i].color;
-        context.moveTo(this.bodies[i].lastpos_x[j-1], this.bodies[i].lastpos_y[j-1]);
-        context.lineTo(this.bodies[i].lastpos_x[j], this.bodies[i].lastpos_y[j]);
-        context.stroke();
-      }
-      this.drawLines(this.bodies[i].plot_x, this.bodies[i].lastpos_x, this.bodies[i].plot_y, this.bodies[i].lastpos_y, this.bodies[i].color);
-    }
-  }
-
-  this.velocity_verlet = function() {
+  this.verlet = function(bodies, step) {
     var pos_x = [];
     var pos_y = [];
     var vel_x = [];
     var vel_y = [];
     var acc_x = [];
     var acc_y = [];
-    for (i = 0; i < this.bodies.length; i++) {
+    for (i = 0; i < bodies.length; i++) {
       var a_x = 0;
       var a_y = 0;
-      for (j = 0; j < this.bodies.length; j++) {
-        a_x += acceleration_x(this.bodies[i], this.bodies[j], i, j);
-        a_y += acceleration_y(this.bodies[i], this.bodies[j], i, j);
+      for (j = 0; j < bodies.length; j++) {
+        a_x += this.acceleration_x(bodies[i].r_x, bodies[i].r_y, bodies[j], i, j);
+        a_y += this.acceleration_y(bodies[i].r_x, bodies[i].r_y, bodies[j], i, j);
       }
 
-      // var vhalf_x = this.bodies[i].v_x + 0.5 * step * a_x;
-      // var vhalf_y = this.bodies[i].v_y + 0.5 * step * a_y;
-
-      var new_x = this.bodies[i].r_x + this.bodies[i].v_x * step + 0.5 * a_x * step**2;
-      var new_y = this.bodies[i].r_y + this.bodies[i].v_y * step + 0.5 * a_y * step**2;
+      var new_x = bodies[i].r_x + bodies[i].v_x * step + 0.5 * a_x * step**2;
+      var new_y = bodies[i].r_y + bodies[i].v_y * step + 0.5 * a_y * step**2;
 
       // pos_x.push(this.bodies[i].r_x + this.step*this.bodies[i].v_x + this.step*this.step*a_x/2);
       pos_x.push(new_x);
@@ -195,45 +190,45 @@ function simulate(step, bodies) {
       acc_x.push(a_x);
       acc_y.push(a_y);
     }
-    for (i = 0; i < this.bodies.length; i++) {
+    for (i = 0; i < bodies.length; i++) {
       var ax_new = 0;
       var ay_new = 0;
-      for (var j = 0; j < this.bodies.length; j++) {
-        ax_new += lf_acceleration_x(pos_x[i], pos_y[i], this.bodies[j], i, j);
-        ay_new += lf_acceleration_y(pos_x[i], pos_y[i], this.bodies[j], i, j);
+      for (var j = 0; j < bodies.length; j++) {
+        ax_new += this.acceleration_x(pos_x[i], pos_y[i], bodies[j], i, j);
+        ay_new += this.acceleration_y(pos_x[i], pos_y[i], bodies[j], i, j);
       }
-      new_vx = this.bodies[i].v_x + 0.5*(acc_x[i] + ax_new)*this.step;
-      new_vy = this.bodies[i].v_y + 0.5*(acc_y[i] + ay_new)*this.step;
+      new_vx = bodies[i].v_x + 0.5*(acc_x[i] + ax_new)*step;
+      new_vy = bodies[i].v_y + 0.5*(acc_y[i] + ay_new)*step;
       vel_x.push(new_vx);
       vel_y.push(new_vy);
     }
-    for (i = 0; i < this.bodies.length; i++) {
+    for (i = 0; i < bodies.length; i++) {
       // x coordinate
-      this.bodies[i].r_x = pos_x[i];
-      this.bodies[i].lastpos_x = this.bodies[i].plot_x;
-      this.bodies[i].plot_x = set_rx(this.bodies[i].r_x);
+      bodies[i].r_x = pos_x[i];
+      bodies[i].lastpos_x = bodies[i].plot_x;
+      bodies[i].plot_x = graphics.set_rx(bodies[i].r_x);
       
       // y coordinate
-      this.bodies[i].r_y = pos_y[i];
-      this.bodies[i].lastpos_y = this.bodies[i].plot_y;
-      this.bodies[i].plot_y = set_ry(this.bodies[i].r_y);
+      bodies[i].r_y = pos_y[i];
+      bodies[i].lastpos_y = bodies[i].plot_y;
+      bodies[i].plot_y = graphics.set_ry(bodies[i].r_y);
       
       // velocities
-      this.bodies[i].v_x = vel_x[i];
-      this.bodies[i].v_y = vel_y[i];
-      // console.log(this.bodies[i].r_x + ' - ' + this.bodies[i].r_y + ' \n ' + this.bodies[i].plot_x + ' - ' + this.bodies[i].plot_y);
+      bodies[i].v_x = vel_x[i];
+      bodies[i].v_y = vel_y[i];
+      // console.log(.bodies[i].r_x + ' - ' + this.bodies[i].r_y + ' \n ' + this.bodies[i].plot_x + ' - ' + this.bodies[i].plot_y);
      }
-       this.draw();
-       this.drawOrbitalLines();
+     graphics.drawBody(bodies);
+     graphics.drawOrbitalLines(bodies);
   } // End verlet
 
-  this.leapfrog = function() {
+  // Yoshida Leapfrog
+
+  this.yoshida = function(bodies, step) {
     var pos_x = [];
     var pos_y = [];
     var vel_x = [];
     var vel_y = [];
-    var acc_x = [];
-    var acc_y = [];
 
     w = 1.2599210498948732; // 2**(1./3.)
     f = 0.7400789501051268; // 2 - w
@@ -242,27 +237,27 @@ function simulate(step, bodies) {
     lf2 = step / f;
     lf3 = (1-w) * step * 0.5 / f;
     lf4 = -step * w / f;
-    for ( i = 0; i < this.bodies.length; i++) {
-        p1_x = this.bodies[i].r_x + lf1 * this.bodies[i].v_x;
-        p1_y = this.bodies[i].r_y + lf1 * this.bodies[i].v_y;
+    for ( i = 0; i < bodies.length; i++) {
+        p1_x = bodies[i].r_x + lf1 * bodies[i].v_x;
+        p1_y = bodies[i].r_y + lf1 * bodies[i].v_y;
         // alert(p1_x);
         ax_new1 = 0;
         ay_new1 = 0;
-        for (j = 0; j < this.bodies.length; j++){
-          ax_new1 += lf_acceleration_x(p1_x, p1_y, this.bodies[j], i, j);
-          ay_new1 += lf_acceleration_y(p1_x, p1_y, this.bodies[j], i, j);
+        for (j = 0; j < bodies.length; j++){
+          ax_new1 += this.acceleration_x(p1_x, p1_y, bodies[j], i, j);
+          ay_new1 += this.acceleration_y(p1_x, p1_y, bodies[j], i, j);
         }
-        v2_x = this.bodies[i].v_x + lf2 * ax_new1;
-        v2_y = this.bodies[i].v_y + lf2 * ay_new1;
+        v2_x = bodies[i].v_x + lf2 * ax_new1;
+        v2_y = bodies[i].v_y + lf2 * ay_new1;
 
         p3_x = p1_x + lf3 * v2_x;
         p3_y = p1_y + lf3 * v2_y;
         
         ax_new2 = 0;
         ay_new2 = 0;
-        for (j = 0; j < this.bodies.length; j++){
-          ax_new2 += lf_acceleration_x(p3_x, p3_y, this.bodies[j], i, j);
-          ay_new2 += lf_acceleration_y(p3_x, p3_y, this.bodies[j], i, j);
+        for (j = 0; j < bodies.length; j++){
+          ax_new2 += this.acceleration_x(p3_x, p3_y, bodies[j], i, j);
+          ay_new2 += this.acceleration_y(p3_x, p3_y, bodies[j], i, j);
         }
 
         v4_x = v2_x + lf4 * ax_new2;
@@ -273,9 +268,9 @@ function simulate(step, bodies) {
 
         ax_new3 = 0;
         ay_new3 = 0;
-        for (j = 0; j < this.bodies.length; j++){
-          ax_new3 += lf_acceleration_x(p5_x, p5_y, this.bodies[j], i, j);
-          ay_new3 += lf_acceleration_y(p5_x, p5_y, this.bodies[j], i, j);
+        for (j = 0; j < bodies.length; j++){
+          ax_new3 += this.acceleration_x(p5_x, p5_y, bodies[j], i, j);
+          ay_new3 += this.acceleration_y(p5_x, p5_y, bodies[j], i, j);
         }
 
         v6_x = v4_x + lf2 * ax_new3;
@@ -289,36 +284,45 @@ function simulate(step, bodies) {
         vel_x.push(v6_x);
         vel_y.push(v6_y);
     }
-    for (i = 0; i < this.bodies.length; i++) {
+    for (i = 0; i < bodies.length; i++) {
       // x coordinate
-      this.bodies[i].r_x = pos_x[i];
-      this.bodies[i].lastpos_x.push(this.bodies[i].plot_x);
-      this.bodies[i].plot_x = set_rx(this.bodies[i].r_x);
+      bodies[i].r_x = pos_x[i];
+      bodies[i].lastpos_x.push(bodies[i].plot_x);
+      bodies[i].plot_x = graphics.set_rx(bodies[i].r_x);
       
       // y coordinate
-      this.bodies[i].r_y = pos_y[i];
-      this.bodies[i].lastpos_y.push(this.bodies[i].plot_y);
-      this.bodies[i].plot_y = set_ry(this.bodies[i].r_y);
-      if (this.bodies[i].lastpos_x.length > 800) {
-        this.bodies[i].lastpos_y.splice(0, this.bodies[i].lastpos_y.length-50);
-        this.bodies[i].lastpos_x.splice(0, this.bodies[i].lastpos_x.length-50);
+      bodies[i].r_y = pos_y[i];
+      bodies[i].lastpos_y.push(bodies[i].plot_y);
+      bodies[i].plot_y = graphics.set_ry(bodies[i].r_y);
+      if (bodies[i].lastpos_x.length > 720) {
+        bodies[i].lastpos_y.splice(0, 20);
+        bodies[i].lastpos_x.splice(0, 20);
       }
       // velocities
-      this.bodies[i].v_x = vel_x[i];
-      this.bodies[i].v_y = vel_y[i];
-      //console.log(this.bodies[i].r_x + ' - ' + this.bodies[i].r_y + ' \n ' + this.bodies[i].plot_x + ' - ' + this.bodies[i].plot_y);
+      bodies[i].v_x = vel_x[i];
+      bodies[i].v_y = vel_y[i];
+      //console.log(bodies[i].r_x + ' - ' + bodies[i].r_y + ' \n ' + bodies[i].plot_x + ' - ' + bodies[i].plot_y);
      }
-      this.draw();
-      this.drawOrbitalLines();
+      graphics.drawBody(bodies);
+      graphics.drawOrbitalLines(bodies);
   }
-    
-} // End Simulate
+}
+
+
+// Physics Simulation Function
+
 
 // (m, rx, ry, vx, vy, ra,color)
 //var bodies = [new body(10**15,20,20,-20,0,10,'yellow'), new body(10**15, 30,30,20,0,10,'blue'),new body(10**15, 120,120,0,-20,10,'green'), new body(10**15,50,30,0,20,10,'red')];
 
-/// Initial conditions for real solar system simulation
+/// Initializing the simulation
+conf = new config();
+// conf.changeSim('fig8');
 
+graphics = new graphics();
+physics = new physics();
+
+/// Initial conditions for real solar system simulation
 sun = new body(1.98855e30,0,0,0,0,15,'yellow', 'Sun');
 earth = new body(5.9742e24, 147.1e9,0,0,-30.29e3,10,'blue', 'Earth');
 venus = new body(4.8685e24, 107.5e9, 0, 0, -35.26e3, 10, 'salmon', 'Venus');
@@ -338,17 +342,15 @@ sim_1_ball3 = new body(5e29, 0, 0, 0, 0, 15, 'red');
 sim1 = [sim_1_ball1, sim_1_ball2, sim_1_ball3];
 
 //// Cond iniciais
-sim_2_ball1 = new body(1, 80e9, 0, 0, -15e3, 7, 'green');
-sim_2_ball2 = new body(1, -80e9, 0,0, -15e3, 7, 'gold');
-sim_2_ball3 = new body(1, 0, 0, 0, 30e3, 7,'red');
+sim_2_ball1 = new body(1, 0, 0, 0.93240737,0.86473146, 5, 'green');
+sim_2_ball2 = new body(1, -0.97000436, 0.24308753, -0.93240737/2, -0.86473146/2, 5, 'gold');
+sim_2_ball3 = new body(1, 0.97000436, -0.24308753, -0.93240737/2, -0.86473146/2, 5,'red');
 sim2 = [sim_2_ball1, sim_2_ball2, sim_2_ball3];
 
 
 pause = 0;
 
-to_simulate = solar_system;
-
-system = new simulate(24*3600,to_simulate);
+to_simulate = sim1;
 cm = new mass_center(to_simulate);
 
 
@@ -361,6 +363,12 @@ document.body.onkeyup = function(e){
         pause = 0;
         animate();
       }
+  }
+  if(e.keyCode == 13) {
+    conf.changeSim('solar system');
+    to_simulate = solar_system;
+    cm = new mass_center(to_simulate);
+    animate();
   }
   if (e.keyCode == 109 || e.keyCode == 173) {
     for (i = 0; i < to_simulate.length; i++){
@@ -384,13 +392,16 @@ document.body.onkeyup = function(e){
 
 function animate() {
     if (pause == 0) {
-    requestAnimationFrame(animate);
-    context.clearRect(0,0,canvas.width,canvas.height);
-    system.leapfrog();
-    cm.set_CM();
-    set_UI(to_simulate.length, parseInt(cm.plot_x), parseInt(cm.plot_y));
-    system.drawOrbitalLines();
-    } else {
+      requestAnimationFrame(animate);
+      context.clearRect(0,0,canvas.width,canvas.height);
+      if (conf.integrator == "yoshida") {
+        physics.yoshida(to_simulate, h);
+      } else {
+        physics.verlet(to_simulate, h);
+      }
+      cm.set_CM();
+      graphics.set_UI(to_simulate.length, parseInt(cm.plot_x), parseInt(cm.plot_y));
+      graphics.drawOrbitalLines(to_simulate);
     }
 }
 animate();

@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="utf-8" />
-<title>N-Body Simulator - Verlet Integration</title>
+<title>N-Body Simulator - 4th order Yoshida Integrator</title>
 <link rel = 'stylesheet' href = 'css/normalize.css'/>
 <link rel = 'stylesheet' href = 'css/style.css'/>
 </head>
@@ -12,7 +12,6 @@
   <div class = 'container'>
   <canvas id='simulator'></canvas>
   </div>
-<script type="text/javascript" src='js/nbody.js'></script>
 <div class = "footer">
   <a class = "author" href = "http://mirandagil.github.io">Made by: Gil Miranda</a>
   <p class = "counter">
@@ -22,7 +21,8 @@
     Zoom in/out with +/- | pause with spacebar
   </p>
 </div>
-
+<script type="text/javascript" src='js/jquery-3.4.1.min.js'></script>
+<script type="text/javascript" src='js/nbody.js'></script>
 </body>
 
 </html>
