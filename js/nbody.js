@@ -84,6 +84,7 @@ sim_switcher.click(function(){
 
 pause_btn = $('.btn_pause');
 trail_btn = $('.btn_trail');
+editor_btn = $('.btn_editor');
 
 pause_btn.click(function(){
   if($(this).text() == "Pause") {
@@ -111,6 +112,11 @@ trail_btn.click(function() {
     $(this).text("Trail Off");
   }
   conf.trail = (conf.trail == true) ? false : true;
+});
+
+editor_btn.click(function() {
+  $(this).toggleClass('editor_on');
+  conf.editor = (conf.editor == true) ? false : true;
 });
 
 document.body.onkeyup = function(e){
@@ -154,6 +160,36 @@ document.body.onkeyup = function(e){
     canvas.height -= .5*window.innerHeight;
   }
 }
+
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+}
+
+
+dom_canvas = $("#simulator");
+canvas.addEventListener('mousemove', function(evt) {
+        var mousePos = getMousePos(canvas, evt);
+        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+        console.log(message);
+      }, false);
+
+  dom_canvas.mousedown(function(ev){
+    if(conf.editor == true) {
+      if(ev.which == 3) {
+        alert('a');
+      }
+      if(ev.which == 1) {
+        alert('b');
+      }
+    }
+
+});
+
+
 
 simulate("solar");
 function animate() {

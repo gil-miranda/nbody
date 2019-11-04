@@ -3,6 +3,7 @@ class config {
     this.integrator = "yoshida";
     this.simulation = "solar system";
     this.trail = true;
+    this.editor = false;
   }
   changeSim(sim) {
     if (sim == "solar system") {

@@ -139,6 +139,12 @@ a.menu:hover{
   color: #333;
 }
 
+.editor_on {
+  background: #80d1b2;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #80d1b2, #4fb3bc) !important; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #333 !important;
+}
 .warning {
   width: 100vw;
   height: 1rem;
