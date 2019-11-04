@@ -1,7 +1,7 @@
-////////////// N-Body problem simulator with Simpletic Velocity-Verlet Integrator
+////////////// N-Body problem simulator with Simpletic Velocity-Verlet and 4th order Yoshida Integrator
 //////// Author: Gil Miranda
 //////// Contact: gilsmneto@gmail.com; gil.neto@ufrj.br
-////////////// Last Update: 02/11/2019
+////////////// Last Update: 04/11/2019
 var canvas = document.querySelector('canvas');
 var context = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -18,7 +18,7 @@ conf = new config();
 graphics = new graphics();
 physics = new physics();
 
-/// Initial conditions for real solar system simulation
+/// Initial conditions for each simulation
 function simulate(sim){
   if (sim == "coreo1"){
     sim_1_ball1 = new body(1, 80e9, 0, -15e3, 15e3, 7, 'green');
@@ -53,7 +53,7 @@ function simulate(sim){
     sim_6_ball3 = new body(1, -0.5, -0.8660254037844386, 0.47631397208144133, -0.27499999999999986, 5,'cyan');
     bodies = [sim_6_ball1, sim_6_ball2, sim_6_ball3];
   }
-  else {
+  else { // Solar System
     sun = new body(1.98855e30,0,0,0,0,15,'yellow', 'Sun');
     earth = new body(5.9742e24, 147.1e9,0,0,-30.29e3,10,'blue', 'Earth');
     venus = new body(4.8685e24, 107.5e9, 0, 0, -35.26e3, 10, 'salmon', 'Venus');
@@ -75,9 +75,6 @@ sim_switcher = $('.sim_switcher');
 sim_switcher.click(function(){
   var this_id = $(this).attr("title");
   sim_switcher.removeClass('active');
-  /*for (i = 0; i < sim_switcher.length; i++){
-    alert(sim_switcher[i].toggleClass('active'));//sim_switcher[i].removeClass('active');
-  };*/
   $(this).toggleClass('active');
   conf.changeSim(this_id);
   physics.resetPhysics(bodies);
@@ -85,8 +82,44 @@ sim_switcher.click(function(){
   animate();
 });
 
+pause_btn = $('.btn_pause');
+trail_btn = $('.btn_trail');
+
+pause_btn.click(function(){
+  if($(this).text() == "Pause") {
+    $(this).text("Resume");
+  } else {
+    $(this).text("Pause");
+  }
+  if (pause == 0) {
+    pause = 1;
+    warning.toggle();
+    $(".w_pause").css("display","block");
+  }
+  else {
+    pause = 0;
+    warning.toggle();
+    $(".w_pause").css("display","none");
+    animate();
+  }
+});
+
+trail_btn.click(function() {
+  if($(this).text() == "Trail Off") {
+    $(this).text("Trail On");
+  } else {
+    $(this).text("Trail Off");
+  }
+  conf.trail = (conf.trail == true) ? false : true;
+});
+
 document.body.onkeyup = function(e){
   if(e.keyCode == 32){
+    if(pause_btn.text() == "Pause") {
+      pause_btn.text("Resume");
+    } else {
+      pause_btn.text("Pause");
+    }
       if (pause == 0) {
         pause = 1;
         warning.toggle();
@@ -133,7 +166,7 @@ function animate() {
         physics.verlet(to_simulate, h);
       }
       cm.set_CM();
-      graphics.set_UI(to_simulate.length, parseInt(cm.plot_x), parseInt(cm.plot_y));
+      graphics.set_UI(to_simulate.length, parseInt(cm.plot_x - canvas.width*0.5), parseInt(cm.plot_y- canvas.height*0.5));
       graphics.drawOrbitalLines(to_simulate);
     }
 }

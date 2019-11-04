@@ -5,6 +5,8 @@
 <meta charset="utf-8" />
 <title>N-Body Simulator - 4th order Yoshida Integrator</title>
 <link rel = 'stylesheet' href = 'css/normalize.css'/>
+<link rel = 'stylesheet' href = 'css/animate.css'/>
+<link rel = 'stylesheet' href = 'css/light-modal.min.css'/>
 <link rel = 'stylesheet' href = 'css/style.css'/>
 </head>
 
@@ -15,24 +17,81 @@
   <div class = 'container'>
     <canvas id='simulator'></canvas>
   </div>
+
+  <div class="simulations_menu">
+    <span href="#" title="solar system" class="sim_switcher active">Solar System</span>
+    <span href="#" title="fig8" class="sim_switcher">Figure 8 #1</span>
+    <span href="#" title="coreo1" class="sim_switcher">Figure 8 #2</span>
+    <span href="#" title="coreo2" class="sim_switcher">Figure 8 #3</span>
+    <span href="#" title="coreo3" class="sim_switcher">Coreography #1</span>
+    <span href="#" title="l5" class="sim_switcher">Lagrange Point</span>
+    <span href="#" title="i_circles" class="sim_switcher">Interlocking Circles</span>
+    <span href="#" title="i_circles" class="sim_switcher">Freestyle</span>
+  </div>
 <div class = "footer">
-  <a class = "author" href = "http://mirandagil.github.io">Made by: Gil Miranda</a>
+  <div class = "instructions">
+    <a href="#" class="menu">menu</a>
+    <span>Zoom in/out with +/- | pause with spacebar</span>
+  </div>
   <p class = "counter">
     Bodies count: <span id = "body_counter">50</span>; CM coordinates: (<span id='cm_posx'>300</span>,<span id='cm_posy'>300</span>)
   </p>
-  <p class = "instructions">
-    Zoom in/out with +/- | pause with spacebar
-  </p>
+  <a class = "author" href = "http://mirandagil.github.io">Made by: Gil Miranda</a>
 </div>
-<div class="menu">
-  <span href="#" title="solar system" class="sim_switcher active">Solar System</span>
-  <span href="#" title="fig8" class="sim_switcher">Figure 8 #1</span>
-  <span href="#" title="coreo1" class="sim_switcher">Figure 8 #2</span>
-  <span href="#" title="coreo2" class="sim_switcher">Figure 8 #3</span>
-  <span href="#" title="coreo3" class="sim_switcher">Coreography #1</span>
-  <span href="#" title="l5" class="sim_switcher">Lagrange Point</span>
-  <span href="#" title="i_circles" class="sim_switcher">Interlocking Circles</span>
+<div class="the_menu">
+  <ul>
+    <li><a href="#about_modal" class="btn">About</a></li>
+    <li><a href="#help_modal" class="btn">Help</a></li>
+    <li>Editor mode</li>
+    <li class="btn_trail">Trail Off</li>
+    <li class="btn_pause">Pause</li>
+  </ul>
 </div>
+
+<!-- ABOUT modal -->
+<div class="light-modal" id="about_modal" role="dialog" aria-labelledby="light-modal-label" aria-hidden="false">
+        <div class="light-modal-content animated fadeInLeft">
+            <!-- light modal header -->
+            <div class="light-modal-header">
+                <h3 class="light-modal-heading">About</h3>
+                <a href="#" class="light-modal-close-icon" aria-label="close">&times;</a>
+            </div>
+            <!-- light modal body -->
+            <div class="light-modal-body">
+                Este trabalho é resultado do Projeto III do curso de Computação Científica II 2019.2 @ UFRJ<br>
+                Desenvolvido por <span>Gil Miranda</span> - Aluno da Matemática Aplicada<br>
+                Um versão em Python pode ser encontrada em <span><a href="https://github.com/mirandagil/university-courses/tree/master/comp-cientifica-II-2019-2/Project-II">meu GitHub</a></span><br><br>
+                <h4>Simulador do problema de n-corpos</h4>
+                Este é um simulador do problema de n-corpos, a solução é dada atráves de um integrador leapfrog de 4ª ordem: Yoshida method
+            </div>
+            <!-- light modal footer -->
+        </div>
+    </div>
+    <!-- Help modal -->
+    <div class="light-modal" id="help_modal" role="dialog" aria-labelledby="light-modal-label" aria-hidden="false">
+            <div class="light-modal-content animated fadeInLeft">
+                <!-- light modal header -->
+                <div class="light-modal-header">
+                    <h3 class="light-modal-heading">Help</h3>
+                    <a href="#" class="light-modal-close-icon" aria-label="close">&times;</a>
+                </div>
+                <!-- light modal body -->
+                <div class="light-modal-body">
+                    <h4>Commands</h4>
+                    You can <span>pause</span> or <span>resume</span> the simulation by pressing <span>spacebar</span><br><br>
+                    You can <span>zoom in</span> or <span>zoom out</span> the simulation by pressing <span>+</span> or <span>-</span><br><br>
+                    The pink crosshair is the CM: <span>Center of Mass</span> of the system
+                    <h4>Simulations</h4>
+                    You can navigate through other simulations by the footer menu
+                    <h4>Editor mode and Freestyle simulation</h4>
+
+
+
+                </div>
+                <!-- light modal footer -->
+            </div>
+        </div>
+
 <script type="text/javascript" src='js/jquery-3.4.1.min.js'></script>
 <script type="text/javascript" src='js/config.js'></script>
 <script type="text/javascript" src='js/physics.js'></script>

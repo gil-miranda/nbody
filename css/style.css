@@ -2,6 +2,7 @@ body {
   background: #000;
   max-height: 100vh;
   margin: 0;
+  overflow: hidden;
 }
 
 
@@ -14,50 +15,56 @@ body {
 
 .footer {
   width: 100%;
-  height: 4.5vh;
+  height: 2rem;
   background: #8e9eab;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to top, #eef2f3, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom, #eef2f3, #8e9eab); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-  margin: 0 auto;
 }
 
 .author {
   color: #333;
   font-size: .8em;
-  float: right;
-  margin-right: 1em;
-  margin-top: .5em;
+  display: inline-block;
+  width: 28%;
+  height: 100%;
+  position: relative;
   text-decoration: none;
+  text-align: right;
+  margin-top: .3rem;
 }
 
 .counter{
   font-size: .8em;
   margin: 0 auto;
-  padding-top: .5em;
   display: inline-block;
-  width: 300px;
+  width: 30%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  margin-top: .3rem;
 }
 
 .instructions {
   font-size: .8em;
   margin: 0 auto;
-  padding-left: 10em;
-  padding-top: .5em;
   display: inline-block;
+  position: relative;
   float: left;
-  width: 300px;
+  width: 40%;
+  height: 100%;
   color: red;
+  margin-top: .3rem;
 }
 
-.menu {
+.simulations_menu {
   display: block;
   float: left;
-  margin: -4.5em auto;
+  margin: -1.5rem 0;
   position: absolute;
 }
 
-.menu .sim_switcher {
+.simulations_menu .sim_switcher {
   display: inline-block;
   padding-left: .5em;
   font-size: .8em;
@@ -65,8 +72,71 @@ body {
   cursor: pointer;
 }
 
-.menu .active {
+.simulations_menu .active {
   text-decoration: underline;
+}
+
+.menu {
+  margin-right: 2rem;
+  margin-left: 2rem;
+}
+
+a.menu{
+  display:block;
+  text-decoration: none;
+  padding: .2rem .8rem;
+  position: relative;
+  top: .2rem;
+  color: #333;
+  border: .1rem solid #5e239d;
+  background: #8e9eab;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #5e239d, #3b14bc); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+}
+
+a.menu:hover{
+  background: #8e9eab;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #5e239d, #b159ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+}
+
+.the_menu{
+  background: #8e9eab;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #5e239d, #3b14bc); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+  width: 100%;
+  height: 3rem;
+  display: block;
+  margin: 0 auto;
+  top: 0;
+  position: absolute;
+  z-index: 10;
+  padding: 0;
+}
+
+.the_menu li {
+  display: inline-block;
+  padding: .5rem;
+  background: #8e9eab;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #5e239d, #3b14bc); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+  margin-top: -2rem;
+  border: 1px solid #fff;
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .5s;
+}
+.the_menu li a {
+  color: #fff;
+  text-decoration: none;
+}
+.the_menu li:hover {
+  background: #fff;
+  color: #333;
 }
 
 .warning {
@@ -77,6 +147,7 @@ body {
   background: linear-gradient(to bottom, #b6fbff, #83a4d4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   position: absolute;
   display: none;
+  z-index: 100;
 }
 
 .warning p {
@@ -88,3 +159,13 @@ body {
   text-shadow: .05rem .05rem #fff;
   display: none;
 }
+
+.light-modal span {
+    background: #fff;
+    color: #845ec2;
+    padding: .1rem .1rem;
+    border-radius: .2rem;
+    margin: .3rem;
+}
+
+/////
