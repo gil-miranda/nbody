@@ -339,21 +339,44 @@ var solar_system = [sun, earth, venus, mercury, mars, jupiter, saturn, uranus, n
 sim_1_ball1 = new body(1, 80e9, 0, -15e3, 15e3, 7, 'green');
 sim_1_ball2 = new body(1, -90e9, 0,15e3, -15e3, 7, 'gold');
 sim_1_ball3 = new body(5e29, 0, 0, 0, 0, 15, 'red');
-sim1 = [sim_1_ball1, sim_1_ball2, sim_1_ball3];
+coreo1 = [sim_1_ball1, sim_1_ball2, sim_1_ball3];
 
 //// Cond iniciais
 sim_2_ball1 = new body(1, 0, 0, 0.93240737,0.86473146, 5, 'green');
 sim_2_ball2 = new body(1, -0.97000436, 0.24308753, -0.93240737/2, -0.86473146/2, 5, 'gold');
 sim_2_ball3 = new body(1, 0.97000436, -0.24308753, -0.93240737/2, -0.86473146/2, 5,'red');
-sim2 = [sim_2_ball1, sim_2_ball2, sim_2_ball3];
+fig8 = [sim_2_ball1, sim_2_ball2, sim_2_ball3];
 
 
 pause = 0;
 
-to_simulate = sim1;
+to_simulate = solar_system;
 cm = new mass_center(to_simulate);
 
+changer_solarsystem = document.getElementById("change_solarsystem");
+changer_fig8 = document.getElementById("change_fig8");
+changer_coreo1 = document.getElementById("change_coreo1");
 
+changer_solarsystem.onclick = function() {
+  conf.changeSim('solar system');
+    to_simulate = solar_system;
+    cm = new mass_center(to_simulate);
+    animate();
+}
+
+changer_fig8.onclick = function() {
+  conf.changeSim('fig8');
+    to_simulate = fig8;
+    cm = new mass_center(to_simulate);
+    animate();
+}
+
+changer_coreo1.onclick = function() {
+  conf.changeSim('coreo1');
+    to_simulate = coreo1;
+    cm = new mass_center(to_simulate);
+    animate();
+}
 document.body.onkeyup = function(e){
   if(e.keyCode == 32){
       if (pause == 0) {
@@ -389,6 +412,7 @@ document.body.onkeyup = function(e){
     canvas.height -= .5*window.innerHeight;
   }
 }
+
 
 function animate() {
     if (pause == 0) {
