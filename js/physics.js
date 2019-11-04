@@ -7,7 +7,7 @@ function physics() {
       return (body_2.r_x-body_1x) * G * body_2.mass / Math.sqrt((body_1x - body_2.r_x)**2 + (body_1y - body_2.r_y)**2)**3;
     }
   }
-  
+
   this.acceleration_y = function(body_1x, body_1y, body_2, i, j) {
     if (i == j) {
       return 0;
@@ -59,12 +59,12 @@ function physics() {
       bodies[i].r_x = pos_x[i];
       bodies[i].lastpos_x = bodies[i].plot_x;
       bodies[i].plot_x = graphics.set_rx(bodies[i].r_x);
-      
+
       // y coordinate
       bodies[i].r_y = pos_y[i];
       bodies[i].lastpos_y = bodies[i].plot_y;
       bodies[i].plot_y = graphics.set_ry(bodies[i].r_y);
-      
+
       // velocities
       bodies[i].v_x = vel_x[i];
       bodies[i].v_y = vel_y[i];
@@ -104,7 +104,7 @@ function physics() {
 
         p3_x = p1_x + lf3 * v2_x;
         p3_y = p1_y + lf3 * v2_y;
-        
+
         ax_new2 = 0;
         ay_new2 = 0;
         for (j = 0; j < bodies.length; j++){
@@ -141,15 +141,33 @@ function physics() {
       bodies[i].r_x = pos_x[i];
       bodies[i].lastpos_x.push(bodies[i].plot_x);
       bodies[i].plot_x = graphics.set_rx(bodies[i].r_x);
-      
+      bodies[i].plot_y = graphics.set_ry(bodies[i].r_y);
+      //console.log(bodies[i].name +' - '+ bodies[i].r_x/bodies[i].r_x0 );
       // y coordinate
       bodies[i].r_y = pos_y[i];
-      bodies[i].lastpos_y.push(bodies[i].plot_y);
-      bodies[i].plot_y = graphics.set_ry(bodies[i].r_y);
-      if (bodies[i].lastpos_x.length > 620) {
-        bodies[i].lastpos_y.splice(0, 20);
-        bodies[i].lastpos_x.splice(0, 20);
+      if (conf.trail == true) {
+        bodies[i].lastpos_y.push(bodies[i].plot_y);
+
+        if(conf.simulation == "solar system") {
+          if (bodies[i].r_x/bodies[i].r_x0 > .99 && bodies[i].r_y/bodies[i].r_y0 > .99) {
+            bodies[i].lastpos_y = [bodies[i].plot_x]//.splice(0, bodies[i].lastpos_x.length);
+            bodies[i].lastpos_x = [bodies[i].plot_y]//.splice(0, bodies[i].lastpos_y.length);
+          } else if (bodies[i].lastpos_x.length > 700){
+            bodies[i].lastpos_x.splice(0, 20);
+            bodies[i].lastpos_y.splice(0, 20);
+          }
+        }
+        
+        if (bodies[i].lastpos_x.length > 600){
+          bodies[i].lastpos_x.splice(0, 20);
+          bodies[i].lastpos_y.splice(0, 20);
+        }
+
+      } else {
+        bodies[i].lastpos_x = [bodies[i].plot_x];
+        bodies[i].lastpos_y = [bodies[i].plot_y];
       }
+
       // velocities
       bodies[i].v_x = vel_x[i];
       bodies[i].v_y = vel_y[i];

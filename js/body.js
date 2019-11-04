@@ -26,8 +26,10 @@ function mass_center(bodies) {
 class body {
   constructor(mass, r_x, r_y, v_x, v_y, ra,color, name) {
     this.mass = mass; // mass of the planet
-    this.r_x = r_x;
-    this.r_y = r_y;
+    this.r_x0 = r_x;
+    this.r_y0 = r_y;
+    this.r_x = this.r_x0;
+    this.r_y = this.r_y0;
     this.plot_x = graphics.set_rx(r_x);
     this.plot_y = graphics.set_ry(r_y);
     this.lastpos_x = [this.plot_x];

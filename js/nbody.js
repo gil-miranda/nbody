@@ -6,7 +6,7 @@ var canvas = document.querySelector('canvas');
 var context = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
+warning = $(".warning");
 
 var G = 6.67428e-11;
 var AU = 149.6e7;
@@ -30,6 +30,28 @@ function simulate(sim){
     sim_2_ball2 = new body(1, -0.97000436, 0.24308753, -0.93240737/2, -0.86473146/2, 5, 'gold');
     sim_2_ball3 = new body(1, 0.97000436, -0.24308753, -0.93240737/2, -0.86473146/2, 5,'red');
     bodies = [sim_2_ball1, sim_2_ball2, sim_2_ball3];
+  } else if(sim == "coreo2") {
+    sim_3_ball1 = new body(1, 0, 0, -2*0.080584, -2*0.588836, 5, 'green');
+    sim_3_ball2 = new body(1, -1, -0.5, 0.080584, 0.588836, 5, 'gold');
+    sim_3_ball3 = new body(1, 1, 0.5, 0.080584, 0.588836, 5,'red');
+    bodies = [sim_3_ball1, sim_3_ball2, sim_3_ball3];
+  } else if(sim == "coreo3") {
+    p1x = 0.557809;
+    p1y = 0.451774;
+    sim_4_ball1 = new body(1, 0, 0, -2*p1x, -2*p1y, 5, 'green');
+    sim_4_ball2 = new body(1, -1, 0, p1x, p1y, 5, 'gold');
+    sim_4_ball3 = new body(1, 1, 0, p1x, p1y, 5,'red');
+    bodies = [sim_4_ball1, sim_4_ball2, sim_4_ball3];
+  } else if(sim == "l5") {
+    sim_5_ball1 = new body(1.98855e30, 0, 0, 0, 0, 15, 'pink');
+    sim_5_ball2 = new body(5.972e24, 5.01847e11, -5.57358e11, 13e3, 2.765e3, 5, 'magenta');
+    sim_5_ball3 = new body(1.898e28, 7.78e11, 0, 0, 13.1e3, 5,'cyan');
+    bodies = [sim_5_ball1, sim_5_ball2, sim_5_ball3];
+  } else if(sim == "i_circles") {
+    sim_6_ball1 = new body(1, 1, 0, 0, .55, 5, 'pink');
+    sim_6_ball2 = new body(1, -0.5, 0.8660254037844386, -0.47631397208144133, -0.27499999999999986, 5, 'magenta');
+    sim_6_ball3 = new body(1, -0.5, -0.8660254037844386, 0.47631397208144133, -0.27499999999999986, 5,'cyan');
+    bodies = [sim_6_ball1, sim_6_ball2, sim_6_ball3];
   }
   else {
     sun = new body(1.98855e30,0,0,0,0,15,'yellow', 'Sun');
@@ -49,45 +71,36 @@ function simulate(sim){
 
 pause = 0;
 
-changer_solarsystem = document.getElementById("change_solarsystem");
-changer_fig8 = document.getElementById("change_fig8");
-changer_coreo1 = document.getElementById("change_coreo1");
+sim_switcher = $('.sim_switcher');
+sim_switcher.click(function(){
+  var this_id = $(this).attr("title");
+  sim_switcher.removeClass('active');
+  /*for (i = 0; i < sim_switcher.length; i++){
+    alert(sim_switcher[i].toggleClass('active'));//sim_switcher[i].removeClass('active');
+  };*/
+  $(this).toggleClass('active');
+  conf.changeSim(this_id);
+  physics.resetPhysics(bodies);
+  simulate(this_id);
+  animate();
+});
 
-changer_solarsystem.onclick = function() {
-    conf.changeSim('solar system');
-    physics.resetPhysics(bodies);
-    simulate("solar system");
-    animate();
-}
-
-changer_fig8.onclick = function() {
-    conf.changeSim('fig8');
-    physics.resetPhysics(bodies);
-    simulate("fig8");
-    animate();
-}
-
-changer_coreo1.onclick = function() {
-    conf.changeSim('coreo1');
-    physics.resetPhysics(bodies);
-    simulate("coreo1");
-    animate();
-}
 document.body.onkeyup = function(e){
   if(e.keyCode == 32){
       if (pause == 0) {
         pause = 1;
+        warning.toggle();
+        $(".w_pause").css("display","block");
       }
       else {
         pause = 0;
+        warning.toggle();
+        $(".w_pause").css("display","none");
         animate();
       }
   }
-  if(e.keyCode == 13) {
-    conf.changeSim('solar system');
-    to_simulate = solar_system;
-    cm = new mass_center(to_simulate);
-    animate();
+  if(e.keyCode == 27) {
+    conf.trail = (conf.trail == true) ? false : true;
   }
   if (e.keyCode == 109 || e.keyCode == 173) {
     for (i = 0; i < to_simulate.length; i++){
