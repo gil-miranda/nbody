@@ -21,37 +21,40 @@ physics = new physics();
 /// Initial conditions for each simulation
 function simulate(sim){
   if (sim == "coreo1"){
-    sim_1_ball1 = new body(1, 80e9, 0, -15e3, 15e3, 7, 'green');
-    sim_1_ball2 = new body(1, -90e9, 0,15e3, -15e3, 7, 'gold');
-    sim_1_ball3 = new body(5e29, 0, 0, 0, 0, 15, 'red');
+    sim_1_ball1 = new body(1, 80e9, 0, -15e3, 15e3, 7, '#d66f6f');
+    sim_1_ball2 = new body(1, -90e9, 0,15e3, -15e3, 7, '#5c5c5e');
+    sim_1_ball3 = new body(5e29, 0, 0, 0, 0, 15, '#fff');
     bodies = [sim_1_ball1, sim_1_ball2, sim_1_ball3];
   } else if (sim == "fig8"){
-    sim_2_ball1 = new body(1, 0, 0, 0.93240737,0.86473146, 5, 'green');
-    sim_2_ball2 = new body(1, -0.97000436, 0.24308753, -0.93240737/2, -0.86473146/2, 5, 'gold');
-    sim_2_ball3 = new body(1, 0.97000436, -0.24308753, -0.93240737/2, -0.86473146/2, 5,'red');
+    sim_2_ball1 = new body(1, 0, 0, 0.93240737,0.86473146, 5, '#731dd8');
+    sim_2_ball2 = new body(1, -0.97000436, 0.24308753, -0.93240737/2, -0.86473146/2, 5, '#ff7733');
+    sim_2_ball3 = new body(1, 0.97000436, -0.24308753, -0.93240737/2, -0.86473146/2, 5,'#f40000');
     bodies = [sim_2_ball1, sim_2_ball2, sim_2_ball3];
   } else if(sim == "coreo2") {
-    sim_3_ball1 = new body(1, 0, 0, -2*0.080584, -2*0.588836, 5, 'green');
-    sim_3_ball2 = new body(1, -1, -0.5, 0.080584, 0.588836, 5, 'gold');
-    sim_3_ball3 = new body(1, 1, 0.5, 0.080584, 0.588836, 5,'red');
+    sim_3_ball1 = new body(1, 0, 0, -2*0.080584, -2*0.588836, 5, '#c200fb');
+    sim_3_ball2 = new body(1, -1, -0.5, 0.080584, 0.588836, 5, '#5e2bff');
+    sim_3_ball3 = new body(1, 1, 0.5, 0.080584, 0.588836, 5,'#ff0022');
     bodies = [sim_3_ball1, sim_3_ball2, sim_3_ball3];
   } else if(sim == "coreo3") {
     p1x = 0.557809;
     p1y = 0.451774;
-    sim_4_ball1 = new body(1, 0, 0, -2*p1x, -2*p1y, 5, 'green');
-    sim_4_ball2 = new body(1, -1, 0, p1x, p1y, 5, 'gold');
-    sim_4_ball3 = new body(1, 1, 0, p1x, p1y, 5,'red');
+    sim_4_ball1 = new body(1, 0, 0, -2*p1x, -2*p1y, 5, '#a51c45');
+    sim_4_ball2 = new body(1, -1, 0, p1x, p1y, 5, '#826b40');
+    sim_4_ball3 = new body(1, 1, 0, p1x, p1y, 5,'#ffe2d0');
     bodies = [sim_4_ball1, sim_4_ball2, sim_4_ball3];
   } else if(sim == "l5") {
-    sim_5_ball1 = new body(1.98855e30, 0, 0, 0, 0, 15, 'pink');
-    sim_5_ball2 = new body(5.972e24, 5.01847e11, -5.57358e11, 13e3, 2.765e3, 5, 'magenta');
-    sim_5_ball3 = new body(1.898e28, 7.78e11, 0, 0, 13.1e3, 5,'cyan');
+    sim_5_ball1 = new body(1.98855e30, 0, 0, 0, 0, 15, '#f2918c');
+    sim_5_ball2 = new body(5.972e24, 5.01847e11, -5.57358e11, 13e3, 2.765e3, 5, '#75dba5');
+    sim_5_ball3 = new body(1.898e28, 7.78e11, 0, 0, 13.1e3, 5,'#f0edea');
     bodies = [sim_5_ball1, sim_5_ball2, sim_5_ball3];
   } else if(sim == "i_circles") {
     sim_6_ball1 = new body(1, 1, 0, 0, .55, 5, 'pink');
     sim_6_ball2 = new body(1, -0.5, 0.8660254037844386, -0.47631397208144133, -0.27499999999999986, 5, 'magenta');
     sim_6_ball3 = new body(1, -0.5, -0.8660254037844386, 0.47631397208144133, -0.27499999999999986, 5,'cyan');
     bodies = [sim_6_ball1, sim_6_ball2, sim_6_ball3];
+  }
+  else if(sim == "free") {
+    bodies = [];
   }
   else { // Solar System
     sun = new body(1.98855e30,0,0,0,0,15,'yellow', 'Sun');
@@ -85,6 +88,12 @@ sim_switcher.click(function(){
 pause_btn = $('.btn_pause');
 trail_btn = $('.btn_trail');
 editor_btn = $('.btn_editor');
+menu_btn = $('.menu');
+
+menu_btn.click(function() {
+  menu_btn.toggleClass('menubtn_active');
+  $('.the_menu').slideToggle();
+});
 
 pause_btn.click(function(){
   if($(this).text() == "Pause") {
@@ -172,18 +181,22 @@ function getMousePos(canvas, evt) {
 
 dom_canvas = $("#simulator");
 canvas.addEventListener('mousemove', function(evt) {
-        var mousePos = getMousePos(canvas, evt);
+        mousePos = getMousePos(canvas, evt);
         var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        console.log(message);
+        //console.log(message);
       }, false);
 
   dom_canvas.mousedown(function(ev){
     if(conf.editor == true) {
       if(ev.which == 3) {
-        alert('a');
+
       }
       if(ev.which == 1) {
-        alert('b');
+
+        var newx = graphics.free_rx(mousePos.x, conf.simulation);
+        var newy = graphics.free_ry(mousePos.y, conf.simulation);
+        var newbody = new body(6e20, newx,newy,0,-30e3,10,'red', 'new ball');
+        bodies.push(newbody);
       }
     }
 

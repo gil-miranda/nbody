@@ -55,6 +55,14 @@ class graphics {
       return x/meterPerPixel + 0.5*canvas.width;
     }
 
+    this.free_rx = function(x, sim) {
+      return (x - 0.5*canvas.width) * meterPerPixel;
+    }
+
+    this.free_ry = function(x, sim) {
+      return (x- 0.5*canvas.height) * meterPerPixel ;
+    }
+
     this.set_ry = function(y) {
       return y/meterPerPixel + 0.5*canvas.height;
     }

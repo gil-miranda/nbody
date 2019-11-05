@@ -102,6 +102,13 @@ a.menu:hover{
   color: #fff;
 }
 
+.menubtn_active {
+  background: #5e239d;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom, #5e239d, #b159ff) !important;  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #5e239d, #b159ff) !important; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+}
+
 .the_menu{
   background: #8e9eab;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
@@ -139,6 +146,10 @@ a.menu:hover{
   color: #333;
 }
 
+.the_menu li:hover a {
+  color: #333;
+}
+
 .editor_on {
   background: #80d1b2;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to top, #5e239d, #8e9eab);  /* Chrome 10-25, Safari 5.1-6 */
@@ -172,6 +183,11 @@ a.menu:hover{
     padding: .1rem .1rem;
     border-radius: .2rem;
     margin: .3rem;
+}
+
+.light-modal .alert_span {
+  background-color: #e22;
+  color: #fff;
 }
 
 /////
